@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: student-performance-api
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: API_KEY
+        value: your-api-key-here
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: student-performance-redis
+          property: connectionString
+    healthCheckPath: /health
+    
+  - type: redis
+    name: student-performance-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
