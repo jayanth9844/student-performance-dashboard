@@ -1,11 +1,31 @@
 services:
   - type: web
-    name: fastapi-car-price-api
+    name: student-performance-dashboard-api
     env: docker
     plan: free
     branch: main
     autoDeploy: true
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./backend/Dockerfile
+    rootDir: ./
     envVars:
       - key: MODEL_PATH
         value: app/models/model.joblib
+      - key: CLUSTER_MODEL_PATH
+        value: app/models/cluster_model.joblib
+      - key: API_KEY
+        value: your-secret-api-key
+      - key: SECRET_KEY
+        value: your-super-secret-jwt-key-here-change-in-production
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: student-dashboard-redis
+          property: connectionString
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+  - type: redis
+    name: student-dashboard-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru

@@ -7,6 +7,18 @@ from app.core.exceptions import register_exception_handler
 
 app = FastAPI(title="Student Performance Dashboard API")
 
+# Health check endpoint for Render
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for deployment monitoring"""
+    return {"status": "healthy", "service": "student-performance-dashboard-api"}
+
+# Root endpoint
+@app.get("/")
+async def root():
+    """Root endpoint"""
+    return {"message": "Student Performance Dashboard API", "status": "running"}
+
 # link Middleware
 app.add_middleware(LoggingMiddleware)
 
