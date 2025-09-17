@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, validator
-from typing import List, Optional
+from typing import List
 from app.core.dependencies import get_api_key,get_current_user
-from app.services.model_service import predict_assignment_score, predict_batch_assignment_scores
+from app.services.model_service import predict_batch_assignment_scores
 
 router = APIRouter()
 
@@ -34,15 +34,6 @@ class BatchPredictionResponse(BaseModel):
     total_processed: int
     cache_hits: int
     processing_time_ms: float
-
-@router.post('/predict')
-def predict_assignment_score_endpoint(student: StudentFeatures, user = Depends(get_current_user), _=Depends(get_api_key)):
-    """Predict assignment score for a single student"""
-    try:
-        prediction = predict_assignment_score(student.model_dump())
-        return {"predicted_score": prediction}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
 
 @router.post('/predict/batch', response_model=BatchPredictionResponse)
 def predict_batch_assignment_scores_endpoint(
