@@ -46,10 +46,25 @@ def predict_batch_student_clusters_endpoint(
 ):
     """Predict student clusters/personas for multiple students with caching optimization"""
     try:
-        result = predict_batch_student_clusters([s.model_dump() for s in batch.students])
+        # Convert Pydantic models to dictionaries
+        student_data = []
+        for student in batch.students:
+            student_dict = student.model_dump() if hasattr(student, 'model_dump') else student.dict()
+            student_data.append(student_dict)
+        
+        result = predict_batch_student_clusters(student_data)
+        
+        # Ensure response matches expected format
+        if not isinstance(result, dict):
+            raise ValueError("Invalid response format from clustering service")
+            
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Batch clustering prediction failed: {str(e)}")
+        import traceback
+        error_detail = f"Batch clustering prediction failed: {str(e)}"
+        print(f"Clustering error: {error_detail}")
+        print(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=error_detail)
 
 @router.get('/personas')
 def get_available_personas(user = Depends(get_current_user), _=Depends(get_api_key)):

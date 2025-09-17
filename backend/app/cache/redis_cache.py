@@ -95,8 +95,8 @@ def ensure_redis_connection():
 # Initialize connection on module load
 initialize_redis_connection()
 
-def get_cached_prediction(key: str) -> Optional[float]:
-    """Get single cached prediction with connection retry"""
+def get_cached_prediction(key: str) -> Optional[Any]:
+    """Get single cached prediction with connection retry - supports any JSON serializable type"""
     if not ensure_redis_connection():
         return None
     
@@ -109,20 +109,20 @@ def get_cached_prediction(key: str) -> Optional[float]:
         logger.warning(f"Error getting cached prediction for key {key}: {e}")
         return None
 
-def set_cached_prediction(key: str, value: float, expire_time: int = 300) -> bool:
-    """Set single cached prediction with expiration and connection retry"""
+def set_cached_prediction(key: str, value: Any, expire_time: int = 300) -> bool:
+    """Set single cached prediction with expiration and connection retry - supports any JSON serializable type"""
     if not ensure_redis_connection():
         return False
     
     try:
         redis_client.setex(key, expire_time, json.dumps(value))
         return True
-    except redis.RedisError as e:
+    except (redis.RedisError, TypeError) as e:
         logger.warning(f"Error setting cached prediction for key {key}: {e}")
         return False
 
-def get_multiple_cached_predictions(keys: List[str]) -> List[Optional[float]]:
-    """Get multiple cached predictions using Redis pipeline with connection retry"""
+def get_multiple_cached_predictions(keys: List[str]) -> List[Optional[Any]]:
+    """Get multiple cached predictions using Redis pipeline with connection retry - supports any JSON serializable type"""
     if not keys:
         return []
     
@@ -152,8 +152,8 @@ def get_multiple_cached_predictions(keys: List[str]) -> List[Optional[float]]:
         logger.warning(f"Error getting multiple cached predictions: {e}")
         return [None] * len(keys)
 
-def set_multiple_cached_predictions(predictions: Dict[str, float], expire_time: int = 3600) -> bool:
-    """Set multiple cached predictions using Redis pipeline with connection retry"""
+def set_multiple_cached_predictions(predictions: Dict[str, Any], expire_time: int = 3600) -> bool:
+    """Set multiple cached predictions using Redis pipeline with connection retry - supports any JSON serializable type"""
     if not predictions:
         return True
     
@@ -167,7 +167,7 @@ def set_multiple_cached_predictions(predictions: Dict[str, float], expire_time: 
             pipe.setex(key, expire_time, json.dumps(value))
         pipe.execute()
         return True
-    except redis.RedisError as e:
+    except (redis.RedisError, TypeError) as e:
         logger.warning(f"Error setting multiple cached predictions: {e}")
         return False
 

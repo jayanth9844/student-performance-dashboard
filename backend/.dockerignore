@@ -1,0 +1,54 @@
+# Ignore files for Docker build optimization
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Development files
+.vscode/
+.idea/
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Jupyter notebooks
+*.ipynb
+notebooks/
+
+# Data files (if large)
+data/*.csv
+
+# Test files
+test_*.py
+*_test.py
+tests/
+
+# Examples
+examples/
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Render files
+render.yml
+render.yaml
