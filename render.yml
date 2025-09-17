@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: student-performance-dashboard-api
+    env: docker
+    plan: free
+    branch: main
+    autoDeploy: true
+
+    # 🟢 Tell Render to build inside backend/
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile   # 🟢 Corrected path
+
+    healthCheckPath: /health
+
+    envVars:
+      - key: MODEL_PATH
+        value: /app/app/models/model.joblib
+      - key: CLUSTER_MODEL_PATH
+        value: /app/app/models/cluster_model.joblib
+      - key: SCALER_PATH
+        value: /app/app/models/scaler.pkl
+      - key: PYTHONPATH
+        value: /app
+      - key: API_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: SECRET_KEY
+        generateValue: true
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: student-dashboard-redis
+          property: connectionString
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+
+  - type: redis
+    name: student-dashboard-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru

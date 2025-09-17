@@ -33,7 +33,7 @@ backend/
 ├── examples/
 │   └── batch_prediction_example.py  # Usage examples
 ├── requirements.txt            # Python dependencies
-├── render.yaml                # Render deployment config
+├── ../render.yml              # Render deployment config (at project root)
 └── Dockerfile                 # Docker configuration
 ```
 
@@ -60,6 +60,7 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ### Docker Development
 
+From the project root directory, run:
 ```bash
 docker-compose up --build
 ```
