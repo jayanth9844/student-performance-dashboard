@@ -14,6 +14,6 @@ class StudentFeatures(BaseModel):
 
 
 @router.post('/predict')
-def predict_price(student : StudentFeatures , user = Depends(get_current_user),_=Depends(get_api_key)):
-    prediction = predict_assignment_score(student.model_sump())
-    return {"predicted peice": prediction}
+def predict_assignment_score_endpoint(student : StudentFeatures , user = Depends(get_current_user),_=Depends(get_api_key)):
+    prediction = predict_assignment_score(student.model_dump())
+    return {"predicted_score": prediction}
